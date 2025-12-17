@@ -81,12 +81,9 @@ coordinator_system_prompt = """
     1. Talk with the human user and understand their request.
     2. If the request is ambiguous, ask brief clarifying questions.
     3. When the request is clear, summarize it as a single concise instruction
-    and call the `perform_action` tool with that instruction.
-    4. Once you get the result from `perform_action`, present it nicely to the user.
 
     Important:
     - Do NOT perform complex reasoning or calculations yourself.
-    - Always delegate work to `perform_action` for the actual execution.
     - Your main focus is: understanding, clarifying, and delegating.
 """
 
