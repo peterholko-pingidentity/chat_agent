@@ -8,7 +8,7 @@ app = BedrockAgentCoreApp()
 def invoke(payload):
     user_message = payload.get("prompt", "Hello! How can I help you today?")
     response = coordinator_agent(user_message)
-    return {"response": response.text}
+    return {"result": result.message}
 
 coordinator_system_prompt = """
     You are the Coordinator Agent.
