@@ -1,7 +1,7 @@
 from strands import Agent
 from strands.tools import tool
 from bedrock_agentcore import BedrockAgentCoreApp
-
+import requests
 import jwt
 import json
 import asyncio
@@ -34,8 +34,32 @@ async def send_sync_message(message: str):
     print(f"Generated session ID: {session_id}")
 
     # Add authentication headers for Amazon Bedrock AgentCore
-    headers = {"Authorization": f"Bearer eyJraWQiOiIzYzFmMWY4MC1kYjczLTExZjAtYmE4ZC0xMzI3NzZkNjFhNDYiLCJhbGciOiJSUzI1NiJ9.eyJjbGllbnRfaWQiOiI5OTY0Mzc3NC00NDU0LTQyOTctYjJjMS05MjMyZjNlYTM5MmUiLCJpc3MiOiJodHRwczovL2F1dGgucGluZ29uZS5jb20vNDg0YzhkNjktMjc4My00YjU1LWI3ODctYmU3MWM0Y2QxNTMyL2FzIiwianRpIjoiMWJhMDY5MTEtMGNjZC00OGVkLThkYmMtOTJkMWY5ZGY1ZGMzIiwiaWF0IjoxNzY2MTA3MTI3LCJleHAiOjE3NjYxMTA3MjcsImF1ZCI6WyJBY3Rpb25BZ2VudCJdLCJzY29wZSI6ImFjdGlvbmFnZW50IiwiZW52IjoiNDg0YzhkNjktMjc4My00YjU1LWI3ODctYmU3MWM0Y2QxNTMyIiwib3JnIjoiNWJmY2MzN2UtZDhmYy00ODE2LWIxOTEtNmJiOWE2NjZhZTU4IiwicDEucmlkIjoiMWJhMDY5MTEtMGNjZC00OGVkLThkYmMtOTJkMWY5ZGY1ZGMzIn0.Nn9oWi7aFYCxKQLQ_DU_drc4Pmh_24MaLe3BQontlOtLDZbdf1XcQsmq5q0MadfGc1Q0EYFbBb6v5Dlzz4Sk_1JWYu0znjM_CHgEBJ8c13nTtWhEvqGEihE8GV9PRUnpjhU7oPKPlEqxk1EPFyC35pnespLRQtbugj8kfU2LaMI2S1ZhFicXZ38gjFvlX9reaSeVC0WqilUxMJ90NO0ZTb4TffECi9teukwm_3tJ0ln17kNQYU4z4-wFWUGAibMjrUztaf1Xy9gU3KAPk-D3KbMSFqDxpH3-qqXzzltAM02E7zxV7o_0jPg4_rS4YoqUt-YxHmxbYxsJyVAAgq8oPA",
-        'X-Amzn-Bedrock-AgentCore-Runtime-Session-Id': session_id}
+
+    url = "https://auth.pingone.com/484c8d69-2783-4b55-b787-be71c4cd1532/as/token"
+
+    payload = {
+        "grant_type": "client_credentials",
+        "client_id": "99643774-4454-4297-b2c1-9232f3ea392e",
+        "client_secret": "",
+        "scope": "actionagent"
+    }
+
+    headers1 = {
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+
+    response = requests.post(url, data=payload, headers=headers1)
+
+    # Convert the response body to JSON
+    token_response = response.json()
+
+    # Extract the access token
+    access_token = token_response.get("access_token")
+
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "X-Amzn-Bedrock-AgentCore-Runtime-Session-Id": session_id
+    }
         
     async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT, headers=headers) as httpx_client:
         # Get agent card from the runtime URL
